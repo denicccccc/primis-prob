@@ -3,33 +3,81 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Домашнє завдання Promises</title>
-  <link rel="stylesheet" href="scss/style.scss">
+  <title>Домашнє завдання Promises - Легка версія</title>
+  <style>
+    body { font-family: Arial; padding: 20px; background: #f5f5f5; }
+    h1, h2 { color: #4a90e2; }
+    button { padding: 8px 12px; margin: 5px; border: none; border-radius: 4px; background: #4caf50; color: white; cursor: pointer; }
+    section { background: white; padding: 10px; margin-bottom: 15px; border-radius: 6px; }
+  </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Домашнє завдання Promises</h1>
+  <h1>Домашнє завдання Promises</h1>
 
-    <section>
-      <h2>Завдання 1</h2>
-      <button id="delayBtn">Запустити Delay</button>
-    </section>
+  <section>
+    <h2>Завдання 1 - Delay</h2>
+    <button id="delayBtn">Запустити Delay</button>
+  </section>
 
-    <section>
-      <h2>Завдання 2</h2>
-      <button id="toggleMango">Toggle Mango</button>
-      <button id="toggleLux">Toggle Lux</button>
-    </section>
+  <section>
+    <h2>Завдання 2 - Toggle User State</h2>
+    <button id="toggleMango">Toggle Mango</button>
+    <button id="toggleLux">Toggle Lux</button>
+  </section>
 
-    <section>
-      <h2>Завдання 3</h2>
-      <button id="transaction70">Transaction 70</button>
-      <button id="transaction71">Transaction 71</button>
-      <button id="transaction72">Transaction 72</button>
-      <button id="transaction73">Transaction 73</button>
-    </section>
-  </div>
+  <section>
+    <h2>Завдання 3 - Make Transaction</h2>
+    <button id="transaction70">Transaction 70</button>
+    <button id="transaction71">Transaction 71</button>
+    <button id="transaction72">Transaction 72</button>
+    <button id="transaction73">Transaction 73</button>
+  </section>
 
-  <script src="js/script.js"></script>
+  <script>
+    
+    const delay = ms => new Promise(resolve => setTimeout(() => resolve(ms), ms));
+    const logger = time => console.log(`Resolved after ${time}ms`);
+
+    document.getElementById('delayBtn').onclick = () => {
+      delay(2000).then(logger);
+      delay(1000).then(logger);
+      delay(1500).then(logger);
+    };
+
+
+    const users = [
+      { name: 'Mango', active: true },
+      { name: 'Poly', active: false },
+      { name: 'Ajax', active: true },
+      { name: 'Lux', active: false }
+    ];
+
+    const toggleUserState = (allUsers, userName) =>
+      new Promise(resolve => resolve(allUsers.map(u => u.name === userName ? {...u, active: !u.active} : u)));
+
+    const loggerTable = updatedUsers => console.table(updatedUsers);
+
+    document.getElementById('toggleMango').onclick = () => toggleUserState(users, 'Mango').then(loggerTable);
+    document.getElementById('toggleLux').onclick = () => toggleUserState(users, 'Lux').then(loggerTable);
+
+
+    const randomIntegerFromInterval = (min, max) => Math.floor(Math.random()*(max-min+1)+min);
+
+    const makeTransaction = transaction => new Promise((resolve,reject) => {
+      const delayTime = randomIntegerFromInterval(200,500);
+      setTimeout(() => {
+        if (Math.random() > 0.3) resolve([transaction.id, delayTime]);
+        else reject(transaction.id);
+      }, delayTime);
+    });
+
+    const logSuccess = ([id,time]) => console.log(`Transaction ${id} processed in ${time}ms`);
+    const logError = id => console.warn(`Error processing transaction ${id}. Please try again later.`);
+
+    document.getElementById('transaction70').onclick = () => makeTransaction({id:70,amount:150}).then(logSuccess).catch(logError);
+    document.getElementById('transaction71').onclick = () => makeTransaction({id:71,amount:230}).then(logSuccess).catch(logError);
+    document.getElementById('transaction72').onclick = () => makeTransaction({id:72,amount:75}).then(logSuccess).catch(logError);
+    document.getElementById('transaction73').onclick = () => makeTransaction({id:73,amount:100}).then(logSuccess).catch(logError);
+  </script>
 </body>
 </html>
